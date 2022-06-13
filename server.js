@@ -1,10 +1,8 @@
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
-const item = require("./routes/item");
 const auth = require("./routes/auth");
-const cat = require("./routes/cat");
-const users = require("./routes/users");
+const privateRoute = require("./utils/getRoute");
 
 const app = express();
 const port = 3000;
@@ -21,9 +19,7 @@ app.use("/api", auth);
 app.use(verifyToken);
 
 // API PRIVATE
-app.use("/api", item);
-app.use("/api", cat);
-app.use("/api", users);
+privateRoute(app);
 
 async function connect() {
   try {
