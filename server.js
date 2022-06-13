@@ -16,6 +16,8 @@ const SECRET = "changeme";
 
 const User = require("./model/User");
 const Token = require("./model/Token");
+const verifyToken = require("./middleware/verifyToken");
+// import verifyToken from "./middleware/verifyToken";
 
 app.use(cors());
 app.use(express.urlencoded({ extended: false }));
@@ -148,25 +150,7 @@ app.post("/api/refreshToken", async (req, res) => {
   }
 });
 
-const attachUser = (req, res, next) => {
-  const token = req.headers["authorization"];
-  if (token && token.includes("Bearer")) {
-    try {
-      const decodeToken = jsonwebtoken.verify(token.slice(7), SECRET);
-      req.user = decodeToken;
-      next();
-    } catch (err) {
-      if (err.name === "TokenExpiredError") {
-        return res.status(401).json({ message: "Expired token" });
-      }
-      return res.status(401).json({ message: "Invalid Token" });
-    }
-  } else {
-    return res.status(401).json({ message: "Invalid Token" });
-  }
-};
-
-app.use(attachUser);
+app.use(verifyToken);
 
 const requireAuth = jwt({
   secret: SECRET,
